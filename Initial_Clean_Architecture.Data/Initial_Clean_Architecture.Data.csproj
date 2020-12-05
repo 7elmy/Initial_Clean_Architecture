@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Initial_Clean_Architecture.Domain\Initial_Clean_Architecture.Domain.csproj" />
+    <ProjectReference Include="..\Initial_Clean_Architecture.Domain\Initial_Clean_Architecture.Data.Domain.csproj" />
   </ItemGroup>
 
 </Project>

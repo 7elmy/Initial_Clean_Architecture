@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Initial_Clean_Architecture.Domain.Interfaces;
+using Initial_Clean_Architecture.Data.Domain.Interfaces;
 using Initial_Clean_Architecture.Data.Repositories;
 using System.Threading.Tasks;
 

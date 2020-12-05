@@ -1,4 +1,4 @@
-﻿using Initial_Clean_Architecture.Domain.Interfaces;
+﻿using Initial_Clean_Architecture.Data.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using System;

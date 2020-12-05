@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Initial_Clean_Architecture.Domain.Interfaces
+namespace Initial_Clean_Architecture.Data.Domain.Interfaces
 {
     public interface IUnitOfWork : IDisposable
     {

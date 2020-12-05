@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Initial_Clean_Architecture.Domain.Interfaces
+namespace Initial_Clean_Architecture.Data.Domain.Interfaces
 {
     public interface IRepositoryAsync<TEntity> where TEntity : class
     {

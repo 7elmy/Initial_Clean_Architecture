@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Initial_Clean_Architecture.Helpers.Constants.ApiUrlsConst
+namespace Initial_Clean_Architecture.API.Constants.ApiUrlsConst
 {
     public class ApiBaseUrlConst
     {
