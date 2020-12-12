@@ -1,4 +1,3 @@
-using Initial_Clean_Architecture.Helpers.ServicesInstallers.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -7,17 +6,20 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Initial_Clean_Architecture.Helpers.ServicesInstallers.Extensions;
 
 namespace Initial_Clean_Architecture.API
 {
     public class Startup
     {
         private readonly IConfiguration _configuration;
+
         public Startup(IConfiguration configuration)
         {
             _configuration = configuration;
@@ -35,6 +37,9 @@ namespace Initial_Clean_Architecture.API
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                //Todo: add options from appsettings
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Initial_Clean_Architecture.API v1"));
             }
 
             app.UseHttpsRedirection();
