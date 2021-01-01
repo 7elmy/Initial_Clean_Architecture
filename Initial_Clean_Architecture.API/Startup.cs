@@ -13,33 +13,33 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Initial_Clean_Architecture.Helpers.ServicesInstallers.Extensions;
+using Initial_Clean_Architecture.Application.Domain.Settings;
 
 namespace Initial_Clean_Architecture.API
 {
     public class Startup
     {
         private readonly IConfiguration _configuration;
-
+        private readonly SwaggerSettings _swaggerSettings;
         public Startup(IConfiguration configuration)
         {
             _configuration = configuration;
+            _swaggerSettings = new SwaggerSettings();
+            configuration.GetSection(_swaggerSettings.GetType().Name).Bind(_swaggerSettings);
         }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.InstallServices(_configuration, Assembly.GetExecutingAssembly());
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                //Todo: add options from appsettings
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Initial_Clean_Architecture.API v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint(_swaggerSettings.UIEndpoint, _swaggerSettings.Title));
             }
 
             app.UseHttpsRedirection();
@@ -53,5 +53,6 @@ namespace Initial_Clean_Architecture.API
                 endpoints.MapControllers();
             });
         }
+
     }
 }

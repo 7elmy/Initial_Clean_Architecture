@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Initial_Clean_Architecture.Application.Domain\Initial_Clean_Architecture.Application.Domain.csproj" />
     <ProjectReference Include="..\Initial_Clean_Architecture.Helpers\Initial_Clean_Architecture.Helpers.csproj" />
   </ItemGroup>
 

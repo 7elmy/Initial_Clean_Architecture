@@ -1,4 +1,5 @@
-﻿using Initial_Clean_Architecture.Helpers.ServicesInstallers.Interfaces;
+﻿using Initial_Clean_Architecture.Application.Domain.Settings;
+using Initial_Clean_Architecture.Helpers.ServicesInstallers.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
@@ -11,15 +12,20 @@ namespace Initial_Clean_Architecture.API.ServicesInstallers
 {
     public class SwaggerServiceInstaller : IServiceInstaller
     {
-        private readonly string _title = "Bostan Online API";
-        private readonly string _version = "V1";
+        private readonly SwaggerSettings _swaggerSettings;
 
-
+        public SwaggerServiceInstaller()
+        {
+            _swaggerSettings = new SwaggerSettings();
+        }
         public void InstallService(IServiceCollection services, IConfiguration configuration)
         {
+            configuration.GetSection(_swaggerSettings.GetType().Name).Bind(_swaggerSettings);
+
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = _title, Version = _version });
+                //swagger doc name is related to UIEndpoint
+                c.SwaggerDoc(_swaggerSettings.Version, new OpenApiInfo { Title = _swaggerSettings.Title, Version = _swaggerSettings.Version });
 
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
                 {
