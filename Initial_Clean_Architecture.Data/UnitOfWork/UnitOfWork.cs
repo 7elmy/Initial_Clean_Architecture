@@ -21,23 +21,25 @@ namespace Initial_Clean_Architecture.Data.UnitOfWork
 
         public IRepositoryAsync<TEntity> GetRepositoryAsync<TEntity>() where TEntity : class
         {
-            if (_repositories == null) _repositories = new Dictionary<Type, object>();
+            if (_repositories == null)
+                _repositories = new Dictionary<Type, object>();
 
             var type = typeof(TEntity);
-            if (!_repositories.ContainsKey(type)) _repositories[type] = new RepositoryAsync<TEntity>(_context);
+            if (!_repositories.ContainsKey(type))
+                _repositories[type] = new RepositoryAsync<TEntity>(_context);
             return (IRepositoryAsync<TEntity>)_repositories[type];
         }
 
-        public async Task<int> SaveChangesAsync()
+        public Task<int> SaveChangesAsync()
         {
             try
             {
-                return await _context.SaveChangesAsync();
+                return _context.SaveChangesAsync();
             }
             //TODO: log ex
             catch (Exception ex)
             {
-                return -1;
+                throw ex;
             }
 
         }
@@ -51,7 +53,7 @@ namespace Initial_Clean_Architecture.Data.UnitOfWork
             //TODO: log ex
             catch (Exception ex)
             {
-
+                throw ex;
             }
         }
     }

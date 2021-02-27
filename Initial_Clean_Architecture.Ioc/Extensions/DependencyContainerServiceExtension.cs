@@ -19,7 +19,7 @@ namespace Initial_Clean_Architecture.Ioc.Extensions
         {
             var registers = Assembly.GetExecutingAssembly().ExportedTypes.Where(x =>
              typeof(IRegister).IsAssignableFrom(x) && !x.IsInterface && !x.IsAbstract).Select(
-               Activator.CreateInstance).Cast<IRegister>().OrderBy(x => x.Order).ToList();
+               Activator.CreateInstance).Cast<IRegister>().ToList();
 
             registers.ForEach(register => register.RegisterServices(services));
         }

@@ -1,4 +1,5 @@
-﻿using Initial_Clean_Architecture.Ioc.Constants;
+﻿using Initial_Clean_Architecture.Application.Domain.Interfaces;
+using Initial_Clean_Architecture.Application.Services;
 using Initial_Clean_Architecture.Ioc.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -9,10 +10,11 @@ namespace Initial_Clean_Architecture.Ioc.Dependencies
 {
     public class ApplicationDependencies : IRegister
     {
-        public int Order { get; set; } = (int)DependenciesOrderEnum.ApplicationDependencies;
         public void RegisterServices(IServiceCollection services)
         {
-
+            services.AddSingleton<ILoggerService, LoggerService>();
+            services.AddSingleton<ILoggerDataService, LoggerDataService>();
+            services.AddScoped<ITestService, TestService>();
         }
     }
 }

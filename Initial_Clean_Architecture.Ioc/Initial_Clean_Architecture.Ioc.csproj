@@ -8,4 +8,15 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Initial_Clean_Architecture.Application.Domain\Initial_Clean_Architecture.Application.Domain.csproj" />
+    <ProjectReference Include="..\Initial_Clean_Architecture.Application\Initial_Clean_Architecture.Application.csproj" />
+    <ProjectReference Include="..\Initial_Clean_Architecture.Data\Initial_Clean_Architecture.Data.csproj" />
+    <ProjectReference Include="..\Initial_Clean_Architecture.Domain\Initial_Clean_Architecture.Data.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Constants\" />
+  </ItemGroup>
+
 </Project>

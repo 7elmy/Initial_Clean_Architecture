@@ -14,6 +14,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Initial_Clean_Architecture.Helpers.ServicesInstallers.Extensions;
 using Initial_Clean_Architecture.Application.Domain.Settings;
+using Initial_Clean_Architecture.Ioc.Extensions;
 
 namespace Initial_Clean_Architecture.API
 {
@@ -31,16 +32,19 @@ namespace Initial_Clean_Architecture.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.InstallServices(_configuration, Assembly.GetExecutingAssembly());
+            services.RegistAllDependencies();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint(_swaggerSettings.UIEndpoint, _swaggerSettings.Title));
             }
+
 
             app.UseHttpsRedirection();
 

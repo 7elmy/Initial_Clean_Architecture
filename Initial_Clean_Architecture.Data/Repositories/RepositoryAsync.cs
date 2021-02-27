@@ -31,7 +31,7 @@ namespace Initial_Clean_Architecture.Data.Repositories
             //TODO: log ex
             catch (Exception ex)
             {
-                return null;
+                throw ex;
             }
         }
 
@@ -53,7 +53,7 @@ namespace Initial_Clean_Architecture.Data.Repositories
             //TODO: log ex
             catch (Exception ex)
             {
-                return null;
+                throw ex;
             }
         }
 
@@ -75,7 +75,7 @@ namespace Initial_Clean_Architecture.Data.Repositories
             //TODO: log ex
             catch (Exception ex)
             {
-                return null;
+                throw ex;
             }
 
         }
@@ -98,7 +98,7 @@ namespace Initial_Clean_Architecture.Data.Repositories
             //TODO: log ex
             catch (Exception ex)
             {
-                return null;
+                throw ex;
             }
 
         }
@@ -117,7 +117,7 @@ namespace Initial_Clean_Architecture.Data.Repositories
             //TODO: log ex
             catch (Exception ex)
             {
-                return false;
+                throw ex;
             }
         }
         public async Task<bool> AddAsync(IEnumerable<TEntity> entities)
@@ -131,7 +131,7 @@ namespace Initial_Clean_Architecture.Data.Repositories
             //TODO: log ex
             catch (Exception ex)
             {
-                return false;
+                throw ex;
             }
         }
         public bool Update(TEntity entity)
@@ -145,7 +145,7 @@ namespace Initial_Clean_Architecture.Data.Repositories
             //TODO: log ex
             catch (Exception ex)
             {
-                return false;
+                throw ex;
             }
         }
         public bool Update(IEnumerable<TEntity> entities)
@@ -159,7 +159,7 @@ namespace Initial_Clean_Architecture.Data.Repositories
             //TODO: log ex
             catch (Exception ex)
             {
-                return false;
+                throw ex;
             }
 
         }
@@ -175,7 +175,7 @@ namespace Initial_Clean_Architecture.Data.Repositories
             //TODO: log ex
             catch (Exception ex)
             {
-                return false;
+                throw ex;
             }
 
         }
@@ -194,7 +194,7 @@ namespace Initial_Clean_Architecture.Data.Repositories
             //TODO: log ex
             catch (Exception ex)
             {
-                return false;
+                throw ex;
             }
 
 
