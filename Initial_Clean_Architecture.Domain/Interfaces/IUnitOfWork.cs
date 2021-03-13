@@ -7,7 +7,7 @@ namespace Initial_Clean_Architecture.Data.Domain.Interfaces
 {
     public interface IUnitOfWork : IDisposable
     {
-        IRepositoryAsync<TEntity> GetRepositoryAsync<TEntity>() where TEntity : class;
+        IRepositoryAsync<TEntity> GetRepository<TEntity>() where TEntity : class;
         Task<int> SaveChangesAsync();
     }
 }

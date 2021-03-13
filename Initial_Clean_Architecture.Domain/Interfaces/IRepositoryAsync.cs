@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Query;
+﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace Initial_Clean_Architecture.Data.Domain.Interfaces
     public interface IRepositoryAsync<TEntity> where TEntity : class
     {
         #region DQL
-        Task<TEntity> GetByIdAsync(object id);
+        ValueTask<TEntity> GetByIdAsync(object id);
 
         Task<TEntity> GetFirstAsync(Expression<Func<TEntity, bool>> predicate = null,
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
@@ -34,12 +35,12 @@ namespace Initial_Clean_Architecture.Data.Domain.Interfaces
 
 
         #region DML
-        Task<bool> AddAsync(TEntity entity);
-        Task<bool> AddAsync(IEnumerable<TEntity> entities);
-        bool Update(TEntity entity);
-        bool Update(IEnumerable<TEntity> entities);
-        bool Remove(object id);
-        bool Remove(IEnumerable<object> ids);
+        ValueTask<EntityEntry<TEntity>> AddAsync(TEntity entity);
+        Task AddAsync(IEnumerable<TEntity> entities);
+        void Update(TEntity entity);
+        void Update(IEnumerable<TEntity> entities);
+        void Remove(object id);
+        void Remove(IEnumerable<object> ids);
         #endregion
     }
 }

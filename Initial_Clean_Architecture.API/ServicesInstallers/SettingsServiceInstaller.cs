@@ -13,7 +13,8 @@ namespace Initial_Clean_Architecture.API.ServicesInstallers
     {
         public void InstallService(IServiceCollection services, IConfiguration configuration)
         {
-            //  services.Configure<LoggingSettings>(options => configuration.GetSection(nameof(LoggingSettings)).Bind(options));
+             // services.Configure<SwaggerSettings>(options => configuration.GetSection(nameof(SwaggerSettings)).Bind(options));
+             
         }
     }
 }

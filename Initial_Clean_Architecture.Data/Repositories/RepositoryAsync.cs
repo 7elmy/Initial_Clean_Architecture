@@ -1,5 +1,6 @@
 ﻿using Initial_Clean_Architecture.Data.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Query;
 using System;
 using System.Collections.Generic;
@@ -22,182 +23,85 @@ namespace Initial_Clean_Architecture.Data.Repositories
         }
 
         #region DQL
-        public async Task<TEntity> GetByIdAsync(object id)
+        public ValueTask<TEntity> GetByIdAsync(object id)
         {
-            try
-            {
-                return await _dbSet.FindAsync(id);
-            }
-            //TODO: log ex
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            return _dbSet.FindAsync(id);
         }
 
-        public async Task<TEntity> GetFirstAsync(Expression<Func<TEntity, bool>> predicate = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null, bool disableTracking = true)
+        public Task<TEntity> GetFirstAsync(Expression<Func<TEntity, bool>> predicate = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null, bool disableTracking = true)
         {
-            try
-            {
-                IQueryable<TEntity> query = _dbSet;
-                if (disableTracking) query = query.AsNoTracking();
+            IQueryable<TEntity> query = _dbSet;
+            if (disableTracking) query = query.AsNoTracking();
 
-                if (include != null) query = include(query);
+            if (include != null) query = include(query);
 
-                if (predicate != null) query = query.Where(predicate);
+            if (predicate != null) query = query.Where(predicate);
 
-                if (orderBy != null)
-                    return await orderBy(query).FirstOrDefaultAsync();
-                return await query.FirstOrDefaultAsync();
-            }
-            //TODO: log ex
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            if (orderBy != null)
+                return orderBy(query).FirstOrDefaultAsync();
+            return query.FirstOrDefaultAsync();
         }
 
         public IEnumerable<TEntity> GetListPaginate(Expression<Func<TEntity, bool>> predicate = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null, int index = 0, int size = 10, bool disableTracking = true)
         {
-            try
-            {
-                IQueryable<TEntity> query = _dbSet;
-                if (disableTracking) query = query.AsNoTracking();
+            IQueryable<TEntity> query = _dbSet;
+            if (disableTracking) query = query.AsNoTracking();
 
-                if (include != null) query = include(query);
+            if (include != null) query = include(query);
 
-                if (predicate != null) query = query.Where(predicate);
+            if (predicate != null) query = query.Where(predicate);
 
-                if (orderBy != null)
-                    return orderBy(query).Skip(index).Take(size);
-                return query.Skip(index).Take(size);
-            }
-            //TODO: log ex
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-
+            if (orderBy != null)
+                return orderBy(query).Skip(index).Take(size);
+            return query.Skip(index).Take(size);
         }
 
         public IEnumerable<TEntity> GetList(Expression<Func<TEntity, bool>> predicate = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null, bool disableTracking = true)
         {
-            try
-            {
-                IQueryable<TEntity> query = _dbSet;
-                if (disableTracking) query = query.AsNoTracking();
+            IQueryable<TEntity> query = _dbSet;
+            if (disableTracking) query = query.AsNoTracking();
 
-                if (include != null) query = include(query);
+            if (include != null) query = include(query);
 
-                if (predicate != null) query = query.Where(predicate);
+            if (predicate != null) query = query.Where(predicate);
 
-                if (orderBy != null)
-                    return orderBy(query).ToList();
-                return query.ToList();
-            }
-            //TODO: log ex
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-
+            if (orderBy != null)
+                return orderBy(query).ToList();
+            return query.ToList();
         }
         #endregion
 
 
         #region DML
-        public async Task<bool> AddAsync(TEntity entity)
+        public ValueTask<EntityEntry<TEntity>> AddAsync(TEntity entity)
         {
-            try
-            {
-                await _dbSet.AddAsync(entity);
-
-                return true;
-            }
-            //TODO: log ex
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+           return _dbSet.AddAsync(entity);
         }
-        public async Task<bool> AddAsync(IEnumerable<TEntity> entities)
+        public Task AddAsync(IEnumerable<TEntity> entities)
         {
-            try
-            {
-                await _dbSet.AddRangeAsync(entities);
-
-                return true;
-            }
-            //TODO: log ex
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            return _dbSet.AddRangeAsync(entities);
         }
-        public bool Update(TEntity entity)
+        public void Update(TEntity entity)
         {
-            try
-            {
-                _dbSet.Update(entity);
-
-                return true;
-            }
-            //TODO: log ex
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            _dbSet.Update(entity);
         }
-        public bool Update(IEnumerable<TEntity> entities)
+        public void Update(IEnumerable<TEntity> entities)
         {
-            try
-            {
-                _dbSet.UpdateRange(entities);
-
-                return true;
-            }
-            //TODO: log ex
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-
+            _dbSet.UpdateRange(entities);
         }
-        public bool Remove(object id)
+        public void Remove(object id)
         {
-            try
-            {
-                var entity = _dbSet.Find(id);
-                _dbSet.Remove(entity);
-
-                return true;
-            }
-            //TODO: log ex
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-
+            var entity = _dbSet.Find(id);
+            _dbSet.Remove(entity);
         }
 
 
-        public bool Remove(IEnumerable<object> ids)
+        public void Remove(IEnumerable<object> ids)
         {
-            try
+            foreach (var id in ids)
             {
-                foreach (var id in ids)
-                {
-                    Remove(id);
-                }
-                return true;
+                Remove(id);
             }
-            //TODO: log ex
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-
-
         }
         #endregion
     }

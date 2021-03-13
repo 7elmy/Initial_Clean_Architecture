@@ -15,6 +15,10 @@ using System.Threading.Tasks;
 using Initial_Clean_Architecture.Helpers.ServicesInstallers.Extensions;
 using Initial_Clean_Architecture.Application.Domain.Settings;
 using Initial_Clean_Architecture.Ioc.Extensions;
+using Initial_Clean_Architecture.API.Extensions;
+using Microsoft.AspNetCore.Identity;
+using Initial_Clean_Architecture.Data.Domain.Entities;
+using Initial_Clean_Architecture.API.Seeds;
 
 namespace Initial_Clean_Architecture.API
 {
@@ -31,13 +35,14 @@ namespace Initial_Clean_Architecture.API
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.InstallServices(_configuration, Assembly.GetExecutingAssembly());
             services.RegistAllDependencies();
+            services.InstallServices(_configuration, Assembly.GetExecutingAssembly());
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env,
+            UserManager<AppUser> userManager,
+            RoleManager<IdentityRole> roleManager)
         {
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -45,6 +50,7 @@ namespace Initial_Clean_Architecture.API
                 app.UseSwaggerUI(c => c.SwaggerEndpoint(_swaggerSettings.UIEndpoint, _swaggerSettings.Title));
             }
 
+            SeedData(userManager, roleManager);
 
             app.UseHttpsRedirection();
 
@@ -52,11 +58,19 @@ namespace Initial_Clean_Architecture.API
 
             app.UseAuthorization();
 
+            app.UseExceptions();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
         }
 
+        private void SeedData(UserManager<AppUser> userManager,
+            RoleManager<IdentityRole> roleManager)
+        {
+            RolesSeed.Seed(roleManager);
+            UsersSeed.Seed(userManager, _configuration);
+        }
     }
 }

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -26,17 +27,33 @@ namespace Initial_Clean_Architecture.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var repo = _unitOfWork.GetRepositoryAsync<Test>();
-            //await repo.AddAsync(new Test() { TestString = "test" });
-            //await _unitOfWork.SaveChangesAsync();
-            var x = await repo.GetFirstAsync();
-            x.TestString = "test 3";
-            //x.ModificationDate = DateTime.UtcNow;
-            repo.Update(x);
-            await _unitOfWork.SaveChangesAsync();
 
-
+            throw new Exception();
             return Ok();
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Post(Person p)
+        {
+            _testService.LogTest();
+            return Ok();
+        }
+
+        /*
+         * Person 
+         *       []
+         *       NID : 14 num interger
+         *       Name : between 8 , 32
+         *       Phone : 11 number
+         *       BirthDate : validate('dd/mm/yyyy')
+         */
+    }
+
+    public class Person
+    {
+        [Required]
+        public int NId { get; set; }
+        [MinLength(8)]
+        public string Name { get; set; }
     }
 }

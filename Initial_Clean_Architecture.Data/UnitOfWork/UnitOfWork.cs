@@ -19,7 +19,7 @@ namespace Initial_Clean_Architecture.Data.UnitOfWork
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        public IRepositoryAsync<TEntity> GetRepositoryAsync<TEntity>() where TEntity : class
+        public IRepositoryAsync<TEntity> GetRepository<TEntity>() where TEntity : class
         {
             if (_repositories == null)
                 _repositories = new Dictionary<Type, object>();
@@ -32,29 +32,12 @@ namespace Initial_Clean_Architecture.Data.UnitOfWork
 
         public Task<int> SaveChangesAsync()
         {
-            try
-            {
-                return _context.SaveChangesAsync();
-            }
-            //TODO: log ex
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-
+            return _context.SaveChangesAsync();
         }
 
         public void Dispose()
         {
-            try
-            {
-                _context?.Dispose();
-            }
-            //TODO: log ex
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            _context?.Dispose();
         }
     }
 }

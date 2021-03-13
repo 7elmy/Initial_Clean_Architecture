@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Initial_Clean_Architecture.Application.Domain\Initial_Clean_Architecture.Application.Domain.csproj" />
+    <ProjectReference Include="..\Initial_Clean_Architecture.Domain\Initial_Clean_Architecture.Data.Domain.csproj" />
   </ItemGroup>
 
 </Project>

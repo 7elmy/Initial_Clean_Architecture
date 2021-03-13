@@ -12,8 +12,7 @@ namespace Initial_Clean_Architecture.Ioc.Dependencies
     {
         public void RegisterServices(IServiceCollection services)
         {
-            services.AddSingleton<ILoggerService, LoggerService>();
-            services.AddSingleton<ILoggerDataService, LoggerDataService>();
+            services.AddScoped<ILoggerService, LoggerService>();
             services.AddScoped<ITestService, TestService>();
         }
     }

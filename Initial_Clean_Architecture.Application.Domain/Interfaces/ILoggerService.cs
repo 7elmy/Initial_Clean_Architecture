@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Initial_Clean_Architecture.Data.Domain.Entities;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,6 +10,6 @@ namespace Initial_Clean_Architecture.Application.Domain.Interfaces
 {
     public interface ILoggerService
     {
-        Task LogAsync(LogLevel logLevel, string message, Exception exception = null, params object[] args);
+        Task<int> LogAsync(Log log);
     }
 }

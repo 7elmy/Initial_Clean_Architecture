@@ -112,9 +112,8 @@ namespace Initial_Clean_Architecture.Data.Migrations
                         .HasColumnType("bigint")
                         .UseIdentityColumn();
 
-                    b.Property<string>("Action")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                    b.Property<string>("AppUserId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Class")
                         .HasMaxLength(100)
@@ -128,21 +127,25 @@ namespace Initial_Clean_Architecture.Data.Migrations
                     b.Property<string>("Exception")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("LogLevel")
+                        .HasColumnType("int");
+
                     b.Property<string>("Message")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Method")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Proprties")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("logLevel")
-                        .HasColumnType("int");
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("AppUserId");
 
                     b.ToTable("Logs");
                 });
@@ -308,11 +311,9 @@ namespace Initial_Clean_Architecture.Data.Migrations
 
             modelBuilder.Entity("Initial_Clean_Architecture.Data.Domain.Entities.Log", b =>
                 {
-                    b.HasOne("Initial_Clean_Architecture.Data.Domain.Entities.AppUser", "AppUser")
+                    b.HasOne("Initial_Clean_Architecture.Data.Domain.Entities.AppUser", null)
                         .WithMany("Logs")
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("AppUser");
+                        .HasForeignKey("AppUserId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Initial_Clean_Architecture.Data.Migrations
 {
-    public partial class intial : Migration
+    public partial class init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -179,21 +179,22 @@ namespace Initial_Clean_Architecture.Data.Migrations
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    logLevel = table.Column<int>(type: "int", nullable: false),
+                    LogLevel = table.Column<int>(type: "int", nullable: false),
                     Message = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Exception = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Class = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    Action = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    Method = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Proprties = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreationDate = table.Column<DateTime>(type: "SmallDateTime", nullable: false, defaultValueSql: "GETUTCDATE()")
+                    CreationDate = table.Column<DateTime>(type: "SmallDateTime", nullable: false, defaultValueSql: "GETUTCDATE()"),
+                    AppUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Logs", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Logs_AspNetUsers_UserId",
-                        column: x => x.UserId,
+                        name: "FK_Logs_AspNetUsers_AppUserId",
+                        column: x => x.AppUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -239,9 +240,9 @@ namespace Initial_Clean_Architecture.Data.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Logs_UserId",
+                name: "IX_Logs_AppUserId",
                 table: "Logs",
-                column: "UserId");
+                column: "AppUserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
