@@ -1,8 +1,10 @@
 ﻿using Initial_Clean_Architecture.Application.Domain.ContractsModels.Responses;
 using Initial_Clean_Architecture.Application.Domain.Interfaces;
 using Initial_Clean_Architecture.Data.Domain.Entities;
+using Initial_Clean_Architecture.Helpers.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,17 +25,19 @@ namespace Initial_Clean_Architecture.API.Filters
         {
             context.ExceptionHandled = true;
 
-            _loggerService.LogAsync(new Log()
-            {
-                Class = "log from global"
-            });
-
             var message = context.Exception.Message;
 
             if (context.Exception is Exception)
             {
                 context.Result = new BadRequestObjectResult(new ErrorResponse { Message = message });
             }
+
+            _loggerService.LogAsync(context.HttpContext, new Log()
+            {
+                Exception = message,
+                Message = nameof(Exception),
+                LogLevel = LogLevel.Warning,
+            }, true);
         }
     }
 }

@@ -15,12 +15,15 @@ namespace Initial_Clean_Architecture.Data.Domain.Entities
         public LogLevel LogLevel { get; set; }
         public string Message { get; set; }
         public string Exception { get; set; }
-        [MaxLength(100)]
-        public string Class { get; set; }
+        [MaxLength(300)]
+        public string Path { get; set; }
         [MaxLength(100)]
         public string Method { get; set; }
         public string UserName { get; set; }
         public string Proprties { get; set; }
         public DateTime CreationDate { get; set; }
+        public int ResponseStatusCode { get; set; }
+        public string ResponseStatusMessage { get; set; }
+        public string TraceIdentifier { get; set; }
     }
 }

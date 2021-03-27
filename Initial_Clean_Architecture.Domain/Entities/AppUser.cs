@@ -17,10 +17,11 @@ namespace Initial_Clean_Architecture.Data.Domain.Entities
         public string FirstName { get; set; }
         [MaxLength(100)]
         public string FamilyName { get; set; }
+        [MaxLength(100)]
+        public string Role { get; set; }
         public DateTime CreationDate { get; set; }
         public DateTime ModificationDate { get; set; }
         public bool IsDeleted { get; set; }
 
-        public virtual ICollection<Log> Logs { get; set; }
     }
 }

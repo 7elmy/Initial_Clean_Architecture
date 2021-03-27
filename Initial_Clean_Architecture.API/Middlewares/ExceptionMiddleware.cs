@@ -3,8 +3,10 @@ using Initial_Clean_Architecture.Application.Domain.Interfaces;
 using Initial_Clean_Architecture.Data.Domain.Entities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -25,37 +27,45 @@ namespace Initial_Clean_Architecture.API.Middlewares
 
         private async Task BeginInvoke(HttpContext context, ILoggerService loggerService)
         {
-            //handel not handeled exceptions from GlobalExceptionFilter
             try
             {
-                await loggerService.LogAsync(new Log()
+                await loggerService.LogAsync(context, new Log()
                 {
-                    Class = "test start"
+                    LogLevel = LogLevel.Information,
+                    Message = nameof(context.Request)
                 });
 
                 await _next.Invoke(context);
 
-                await loggerService.LogAsync(new Log()
+                await loggerService.LogAsync(context, new Log()
                 {
-                    Class = "test end"
-                });
+                    LogLevel = LogLevel.Information,
+                    Message = nameof(context.Response)
+                }, true);
             }
             catch (UnauthorizedAccessException e)
             {
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                 await context.Response.WriteAsJsonAsync(new ErrorResponse { Message = e.Message });
+
+                await loggerService.LogAsync(context, new Log()
+                {
+                    LogLevel = LogLevel.Warning,
+                    Exception = e.Message,
+                    Message = nameof(UnauthorizedAccessException),
+                }, true);
             }
             catch (Exception e)
             {
                 context.Response.StatusCode = 500;
                 await context.Response.WriteAsJsonAsync(new ErrorResponse { Message = e.Message });
-            }
-            finally
-            {
-                await loggerService.LogAsync(new Log()
+
+                await loggerService.LogAsync(context, new Log()
                 {
-                    Class = "test end"
-                });
+                    LogLevel = LogLevel.Error,
+                    Exception = e.Message,
+                    Message = nameof(Exception),
+                }, true);
             }
         }
 

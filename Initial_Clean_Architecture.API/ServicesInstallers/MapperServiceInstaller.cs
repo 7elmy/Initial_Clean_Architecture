@@ -1,4 +1,5 @@
-﻿using Initial_Clean_Architecture.Application.Domain.Settings;
+﻿using AutoMapper;
+using Initial_Clean_Architecture.Application.Domain.Configurations;
 using Initial_Clean_Architecture.Helpers.ServicesInstallers.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,11 +10,17 @@ using System.Threading.Tasks;
 
 namespace Initial_Clean_Architecture.API.ServicesInstallers
 {
-    public class SettingsServiceInstaller : IServiceInstaller
+    public class MapperServiceInstaller : IServiceInstaller
     {
         public void InstallService(IServiceCollection services, IConfiguration configuration)
         {
-            services.Configure<JWTSettings>(options => configuration.GetSection(nameof(JWTSettings)).Bind(options));
+            var mappingConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new MappingConfiguration());
+            });
+
+            IMapper mapper = mappingConfig.CreateMapper();
+            services.AddSingleton(mapper);
         }
     }
 }

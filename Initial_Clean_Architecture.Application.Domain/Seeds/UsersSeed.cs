@@ -1,21 +1,20 @@
-﻿using Initial_Clean_Architecture.Application.Domain.SeedingData;
+﻿using Initial_Clean_Architecture.Application.Domain.Constants;
 using Initial_Clean_Architecture.Application.Domain.Settings;
 using Initial_Clean_Architecture.Data.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Initial_Clean_Architecture.API.Seeds
+namespace Initial_Clean_Architecture.Application.Domain.Seeds
 {
     public static class UsersSeed
     {
-        public static void Seed(UserManager<AppUser> userManager, IConfiguration configuration)
+        public static void Seed(UserManager<AppUser> userManager, SuperAdminSettings superAdminSettings)
         {
-            var superAdminSettings = new SuperAdminSettings();
-            configuration.GetSection(superAdminSettings.GetType().Name).Bind(superAdminSettings);
 
             string email = superAdminSettings.Email;
 
@@ -31,15 +30,15 @@ namespace Initial_Clean_Architecture.API.Seeds
                     EmailConfirmed = true,
                 };
                 //ensure that there is only 1 super admin
-                var superAdmins = userManager.GetUsersInRoleAsync(RolesData.SuperAdmin).Result;
+                var superAdmins = userManager.GetUsersInRoleAsync(RolesConst.SuperAdmin).Result;
                 if (superAdmins.Count > 0)
                     return;
-                //this password should reseted after publish
-                var result = userManager.CreateAsync(user, "Aa123456").Result;
+                //this password should be reset after publish
+                var result = userManager.CreateAsync(user, Guid.NewGuid().ToString()).Result;
 
                 if (result.Succeeded)
                 {
-                    userManager.AddToRoleAsync(user, RolesData.SuperAdmin).Wait();
+                    userManager.AddToRoleAsync(user, RolesConst.SuperAdmin).Wait();
                 }
             }
         }

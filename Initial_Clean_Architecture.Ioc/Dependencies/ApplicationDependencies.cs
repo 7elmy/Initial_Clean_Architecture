@@ -13,7 +13,7 @@ namespace Initial_Clean_Architecture.Ioc.Dependencies
         public void RegisterServices(IServiceCollection services)
         {
             services.AddScoped<ILoggerService, LoggerService>();
-            services.AddScoped<ITestService, TestService>();
+            services.AddScoped<IAccountService, AccountService>();
         }
     }
 }

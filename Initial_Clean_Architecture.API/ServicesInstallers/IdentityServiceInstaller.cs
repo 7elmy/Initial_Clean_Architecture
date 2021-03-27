@@ -18,12 +18,17 @@ namespace Initial_Clean_Architecture.API.ServicesInstallers
         {
             services.AddIdentity<AppUser, IdentityRole>(options =>
             {
-                //overide passowrd options
-                options.Password.RequireUppercase = false;
-                options.Password.RequireLowercase = false;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequiredUniqueChars = 0;
+                SetPasswordOptions(options.Password);
+
             }).AddEntityFrameworkStores<AppDbContext>();
+        }
+
+        private void SetPasswordOptions(PasswordOptions passwordOptions)
+        {
+            passwordOptions.RequireUppercase = false;
+            passwordOptions.RequireLowercase = false;
+            passwordOptions.RequireNonAlphanumeric = false;
+            passwordOptions.RequiredUniqueChars = 0;
         }
     }
 }

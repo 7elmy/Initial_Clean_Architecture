@@ -18,7 +18,10 @@ using Initial_Clean_Architecture.Ioc.Extensions;
 using Initial_Clean_Architecture.API.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Initial_Clean_Architecture.Data.Domain.Entities;
-using Initial_Clean_Architecture.API.Seeds;
+using Initial_Clean_Architecture.Application.Domain.Seeds;
+using Microsoft.Extensions.Options;
+using Initial_Clean_Architecture.Data.Contexts;
+using Microsoft.EntityFrameworkCore;
 
 namespace Initial_Clean_Architecture.API
 {
@@ -41,14 +44,19 @@ namespace Initial_Clean_Architecture.API
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env,
             UserManager<AppUser> userManager,
-            RoleManager<IdentityRole> roleManager)
+            RoleManager<IdentityRole> roleManager, AppDbContext dataContext)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint(_swaggerSettings.UIEndpoint, _swaggerSettings.Title));
             }
+            else
+            {
+                dataContext.Database.Migrate();
+            }
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint(_swaggerSettings.UIEndpoint, _swaggerSettings.Title));
 
             SeedData(userManager, roleManager);
 
@@ -70,7 +78,14 @@ namespace Initial_Clean_Architecture.API
             RoleManager<IdentityRole> roleManager)
         {
             RolesSeed.Seed(roleManager);
-            UsersSeed.Seed(userManager, _configuration);
+            SeedUsers(userManager);
+        }
+
+        private void SeedUsers(UserManager<AppUser> userManager)
+        {
+            var superAdminSettings = new SuperAdminSettings();
+            _configuration.GetSection(nameof(SuperAdminSettings)).Bind(superAdminSettings);
+            UsersSeed.Seed(userManager, superAdminSettings);
         }
     }
 }
