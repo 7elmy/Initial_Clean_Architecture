@@ -2,6 +2,7 @@
 using Initial_Clean_Architecture.Application.Domain.ContractsModels.Responses;
 using Initial_Clean_Architecture.Helpers.ServicesInstallers.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -23,17 +24,38 @@ namespace Initial_Clean_Architecture.API.ServicesInstallers
             });
         }
 
-        private static void HandelInvalidModel(ApiBehaviorOptions options)
+        private void HandelInvalidModel(ApiBehaviorOptions options)
         {
             options.InvalidModelStateResponseFactory = context =>
             {
-                var errorMessag = "";
-                var error = context.ModelState.ToList().FirstOrDefault();
+                var errorResponse = new ErrorResponse();
+                var errors = context.ModelState.ToList();
 
-                errorMessag = (string.IsNullOrWhiteSpace(error.Key) ? "" : error.Key.ToString() + ": ") + error.Value.Errors.FirstOrDefault().ErrorMessage.Split(". Path:").FirstOrDefault();
+                foreach (var keyModelStatePair in context.ModelState)
+                {
+                    var key = keyModelStatePair.Key;
+                    var errorss = keyModelStatePair.Value.Errors;
 
-                return new BadRequestObjectResult(new ErrorResponse { Message = errorMessag });
+                    AddErrorResponse(errorResponse, key, errorss);
+                }
+                return new UnprocessableEntityObjectResult(errorResponse);
             };
+        }
+
+        private static void AddErrorResponse(ErrorResponse errorResponse, string key, ModelErrorCollection errorss)
+        {
+            if (errorss != null && errorss.Count > 0)
+            {
+                foreach (var error in errorss)
+                {
+                    var errorMessage = new ErrorResponse.ErrorMessage()
+                    {
+                        Key = key,
+                        Message = error.ErrorMessage
+                    };
+                    errorResponse.ErrorMessages.Add(errorMessage);
+                }
+            }
         }
     }
 }

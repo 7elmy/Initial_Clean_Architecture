@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Initial_Clean_Architecture.Application.Domain.Constants.ErrorsConst;
 using Initial_Clean_Architecture.Application.Domain.ContractsModels.Requests;
 using Initial_Clean_Architecture.Application.Domain.ContractsModels.Responses;
 using Initial_Clean_Architecture.Application.Domain.Interfaces;
@@ -6,6 +7,7 @@ using Initial_Clean_Architecture.Application.Domain.Settings;
 using Initial_Clean_Architecture.Data.Domain.Entities;
 using Initial_Clean_Architecture.Data.Domain.Interfaces;
 using Initial_Clean_Architecture.Helpers.Exceptions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -13,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -35,43 +38,53 @@ namespace Initial_Clean_Architecture.Application.Services
 
         public async Task<LoginResponse> LoginAsync(string email, string password)
         {
-            var loggeninUser = await _userManager.FindByEmailAsync(email);
+            var loginResponse = new LoginResponse();
 
-            //todo handel exception
-            if (loggeninUser is null)
-                throw new Exception();
+            var loggedinUser = await _userManager.FindByEmailAsync(email);
 
+            var isValid = await ValidateLogin(password, loginResponse, loggedinUser);
 
-            var userHasValidPassword = await _userManager.CheckPasswordAsync(loggeninUser, password);
-            //todo handel exception
-            if (!userHasValidPassword)
-            {
-                throw new Exception();
-            }
+            if (!isValid)
+                return loginResponse;
 
-            var claims = GenerateClaimsList(loggeninUser);
+            var claims = GenerateClaimsList(loggedinUser);
 
             var token = GenerateToken(claims);
 
-            var loginResponse = new LoginResponse()
-            {
-                Token = token
-            };
+            loginResponse.Token = token;
 
             return loginResponse;
 
         }
 
+        private async Task<bool> ValidateLogin(string password, LoginResponse loginResponse, AppUser loggedinUser)
+        {
+            var isValid = true;
+            if (loggedinUser is null)
+            {
+                var userHasValidPassword = await _userManager.CheckPasswordAsync(loggedinUser, password);
+
+                if (!userHasValidPassword)
+                {
+                    var errorMessage = new ErrorResponse.ErrorMessage()
+                    {
+                        Key = AccountErrorConst.UserKey,
+                        Message = AccountErrorConst.EmailOrPassNotCorrect
+                    };
+                    loginResponse.ErrorResponse.ErrorMessages.Add(errorMessage);
+                    loginResponse.ErrorResponseCode = StatusCodes.Status401Unauthorized;
+                    isValid = false;
+                }
+            }
+            return isValid;
+        }
+
         public async Task<RegistrationResponse> RegisterAsync(UserRegistrationRequest model)
         {
-            var existingUser = await _userManager.FindByEmailAsync(model.Email);
-
-            if (existingUser is not null)
-                throw new AlreadyExistException.Email();
+            await ValidateRegistration(model);
 
             var newUser = _mapper.Map<AppUser>(model);
 
-            //todo: check password
             //todo: check role
 
             var creatdUser = await _userManager.CreateAsync(newUser, model.Password);
@@ -84,6 +97,30 @@ namespace Initial_Clean_Architecture.Application.Services
                 Email = newUser.Email
             };
             return registrationResponse;
+        }
+
+        private async Task ValidateRegistration(UserRegistrationRequest model)
+        {
+            await ValidatePassword(model);
+
+            await ValidateExistingUser(model);
+        }
+
+        private async Task ValidatePassword(UserRegistrationRequest model)
+        {
+            var passwordValidator = new PasswordValidator<AppUser>();
+            var result = await passwordValidator.ValidateAsync(_userManager, null, model.Password);
+
+            if (!result.Succeeded)
+                throw new Exception("passsowrd incorrect");
+        }
+
+        private async Task ValidateExistingUser(UserRegistrationRequest model)
+        {
+            var existingUser = await _userManager.FindByEmailAsync(model.Email);
+
+            if (existingUser is not null)
+                throw new AlreadyExistException.Email();
         }
 
         private List<Claim> GenerateClaimsList(AppUser user)

@@ -25,19 +25,21 @@ namespace Initial_Clean_Architecture.API.Filters
         {
             context.ExceptionHandled = true;
 
-            var message = context.Exception.Message;
+            var exception = context.Exception.Message;
 
             if (context.Exception is Exception)
             {
-                context.Result = new BadRequestObjectResult(new ErrorResponse { Message = message });
+                var errorResponse = new ErrorResponse();
+                errorResponse.Exeption = exception;
+                context.Result = new BadRequestObjectResult(errorResponse);
             }
 
             _loggerService.LogAsync(context.HttpContext, new Log()
             {
-                Exception = message,
+                Exception = exception,
                 Message = nameof(Exception),
                 LogLevel = LogLevel.Warning,
-            }, true);
+            }, isResponse: true);
         }
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Initial_Clean_Architecture.Application.Domain.ContractsModels.Responses
 {
-    public class LoginResponse
+    public class LoginResponse : ResponseState
     {
         public string Token { get; set; }
     }

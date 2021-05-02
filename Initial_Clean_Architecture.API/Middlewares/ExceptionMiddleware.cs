@@ -41,31 +41,37 @@ namespace Initial_Clean_Architecture.API.Middlewares
                 {
                     LogLevel = LogLevel.Information,
                     Message = nameof(context.Response)
-                }, true);
+                }, isResponse: true);
             }
             catch (UnauthorizedAccessException e)
             {
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                await context.Response.WriteAsJsonAsync(new ErrorResponse { Message = e.Message });
+                var errorResponse = new ErrorResponse();
+                errorResponse.Exeption = e.Message;
+
+                await context.Response.WriteAsJsonAsync(errorResponse);
 
                 await loggerService.LogAsync(context, new Log()
                 {
                     LogLevel = LogLevel.Warning,
                     Exception = e.Message,
                     Message = nameof(UnauthorizedAccessException),
-                }, true);
+                }, isResponse: true);
             }
             catch (Exception e)
             {
                 context.Response.StatusCode = 500;
-                await context.Response.WriteAsJsonAsync(new ErrorResponse { Message = e.Message });
+                var errorResponse = new ErrorResponse();
+                errorResponse.Exeption = e.Message;
+
+                await context.Response.WriteAsJsonAsync(errorResponse);
 
                 await loggerService.LogAsync(context, new Log()
                 {
                     LogLevel = LogLevel.Error,
                     Exception = e.Message,
                     Message = nameof(Exception),
-                }, true);
+                }, isResponse: true);
             }
         }
 

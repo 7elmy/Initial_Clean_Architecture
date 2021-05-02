@@ -8,6 +8,17 @@ namespace Initial_Clean_Architecture.Application.Domain.ContractsModels.Response
 {
     public class ErrorResponse
     {
-        public string Message { get; set; }
+        public ErrorResponse()
+        {
+            ErrorMessages = new List<ErrorMessage>();
+        }
+        public List<ErrorMessage> ErrorMessages { get; set; }
+        public string Exeption { get; set; }
+
+        public class ErrorMessage
+        {
+            public string Key { get; set; }
+            public string Message { get; set; }
+        }
     }
 }
