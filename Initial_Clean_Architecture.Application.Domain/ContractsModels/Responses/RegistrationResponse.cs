@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Initial_Clean_Architecture.Application.Domain.ContractsModels.Responses
 {
-    public class RegistrationResponse
+    public class RegistrationResponse: ResponseState
     {
         public string Email { get; set; }
     }

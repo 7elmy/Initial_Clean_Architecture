@@ -50,13 +50,10 @@ namespace Initial_Clean_Architecture.API
             {
                 app.UseDeveloperExceptionPage();
             }
-            else
-            {
-                dataContext.Database.Migrate();
-            }
 
-            app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint(_swaggerSettings.UIEndpoint, _swaggerSettings.Title));
+            UpdateDatabase(dataContext);
+
+            SetupSwagger(app);
 
             SeedData(userManager, roleManager);
 
@@ -72,6 +69,17 @@ namespace Initial_Clean_Architecture.API
             {
                 endpoints.MapControllers();
             });
+        }
+
+        private void SetupSwagger(IApplicationBuilder app)
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint(_swaggerSettings.UIEndpoint, _swaggerSettings.Title));
+        }
+
+        private static void UpdateDatabase(AppDbContext dataContext)
+        {
+            dataContext.Database.Migrate();
         }
 
         private void SeedData(UserManager<AppUser> userManager,

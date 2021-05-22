@@ -28,6 +28,7 @@ namespace Initial_Clean_Architecture.Application.Domain.Seeds
                     UserName = email,
                     Email = email,
                     EmailConfirmed = true,
+                    Role = RolesConst.SuperAdmin
                 };
                 //ensure that there is only 1 super admin
                 var superAdmins = userManager.GetUsersInRoleAsync(RolesConst.SuperAdmin).Result;

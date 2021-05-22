@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
+using Initial_Clean_Architecture.Application.Domain.Constants;
 using Initial_Clean_Architecture.Application.Domain.Constants.ErrorsConst;
 using Initial_Clean_Architecture.Application.Domain.ContractsModels.Requests;
 using Initial_Clean_Architecture.Application.Domain.ContractsModels.Responses;
 using Initial_Clean_Architecture.Application.Domain.Interfaces;
 using Initial_Clean_Architecture.Application.Domain.Settings;
 using Initial_Clean_Architecture.Data.Domain.Entities;
-using Initial_Clean_Architecture.Data.Domain.Interfaces;
 using Initial_Clean_Architecture.Helpers.Exceptions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -15,7 +15,6 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Net;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -59,7 +58,6 @@ namespace Initial_Clean_Architecture.Application.Services
 
         private async Task<bool> ValidateLogin(string password, LoginResponse loginResponse, AppUser loggedinUser)
         {
-            var isValid = true;
             if (loggedinUser is null)
             {
                 var userHasValidPassword = await _userManager.CheckPasswordAsync(loggedinUser, password);
@@ -73,54 +71,135 @@ namespace Initial_Clean_Architecture.Application.Services
                     };
                     loginResponse.ErrorResponse.ErrorMessages.Add(errorMessage);
                     loginResponse.ErrorResponseCode = StatusCodes.Status401Unauthorized;
-                    isValid = false;
                 }
             }
-            return isValid;
+            return loginResponse.IsValid;
         }
 
         public async Task<RegistrationResponse> RegisterAsync(UserRegistrationRequest model)
         {
-            await ValidateRegistration(model);
+            var registrationResponse = new RegistrationResponse();
 
-            var newUser = _mapper.Map<AppUser>(model);
+            var isValid = await ValidateRegistration(model, registrationResponse);
 
-            //todo: check role
+            if (!isValid)
+                return registrationResponse;
 
-            var creatdUser = await _userManager.CreateAsync(newUser, model.Password);
-            //todo handel exception
-            if (!creatdUser.Succeeded)
-                throw new Exception();
+            await CreateUser(model, registrationResponse);
 
-            var registrationResponse = new RegistrationResponse()
-            {
-                Email = newUser.Email
-            };
+            registrationResponse.Email = model.Email;
+
             return registrationResponse;
         }
 
-        private async Task ValidateRegistration(UserRegistrationRequest model)
+        private async Task CreateUser<TResponseModel>(UserRegistrationRequest model, TResponseModel responseModel) where TResponseModel : ResponseState
         {
-            await ValidatePassword(model);
+            var newUser = _mapper.Map<AppUser>(model);
 
-            await ValidateExistingUser(model);
+            var creatdUser = await _userManager.CreateAsync(newUser, model.Password);
+
+            if (!creatdUser.Succeeded)
+            {
+                var errorMessage = new ErrorResponse.ErrorMessage()
+                {
+                    Key = AccountErrorConst.UserKey,
+                    Message = AccountErrorConst.UserFaildToCreate
+                };
+                responseModel.ErrorResponse.ErrorMessages.Add(errorMessage);
+                responseModel.ErrorResponseCode = StatusCodes.Status422UnprocessableEntity;
+            }
         }
 
-        private async Task ValidatePassword(UserRegistrationRequest model)
+        private async Task<bool> ValidateRegistration<TResponseModel>(UserRegistrationRequest model, TResponseModel responseModel) where TResponseModel : ResponseState
         {
+            ValidateRole(model.Role, responseModel);
+
+            await ValidatePassword(model.Password, model.ConfirmPassword, responseModel);
+
+            await ValidateExistingUser(model.Email,responseModel);
+
+            return responseModel.IsValid;
+        }
+
+        private void ValidateRole<TResponseModel>(string role, TResponseModel responseModel) where TResponseModel : ResponseState
+        {
+            if (!responseModel.IsValid)
+                return;
+
+            if (!RolesConst.AllRoles.Contains(role.Trim().ToLower()))
+            {
+                var errorMessage = new ErrorResponse.ErrorMessage()
+                {
+                    Key = AccountErrorConst.RoleKey,
+                    Message = AccountErrorConst.RoleIsNotFound
+                };
+                responseModel.ErrorResponse.ErrorMessages.Add(errorMessage);
+                responseModel.ErrorResponseCode = StatusCodes.Status422UnprocessableEntity;
+            }
+        }
+
+        private async Task ValidatePassword<TResponseModel>(string password, string confirmPassword, TResponseModel responseModel) where TResponseModel : ResponseState
+        {
+            if (!responseModel.IsValid)
+                return;
+
+            ValidatePasswordMatching(password, confirmPassword, responseModel);
+
+            await ValidatePasswordSyntax(password, responseModel);
+        }
+
+        private async Task ValidatePasswordSyntax<TResponseModel>(string password, TResponseModel responseModel) where TResponseModel : ResponseState
+        {
+            if (!responseModel.IsValid)
+                return;
+
             var passwordValidator = new PasswordValidator<AppUser>();
-            var result = await passwordValidator.ValidateAsync(_userManager, null, model.Password);
+            var result = await passwordValidator.ValidateAsync(_userManager, null, password);
 
             if (!result.Succeeded)
-                throw new Exception("passsowrd incorrect");
+            {
+                var errorMessage = new ErrorResponse.ErrorMessage()
+                {
+                    Key = AccountErrorConst.PasswordKey,
+                    Message = AccountErrorConst.PasswordNotValid
+                };
+                responseModel.ErrorResponse.ErrorMessages.Add(errorMessage);
+                responseModel.ErrorResponseCode = StatusCodes.Status422UnprocessableEntity;
+            }
         }
 
-        private async Task ValidateExistingUser(UserRegistrationRequest model)
+        private static void ValidatePasswordMatching<TResponseModel>(string password, string confirmPassword, TResponseModel responseModel) where TResponseModel : ResponseState
         {
-            var existingUser = await _userManager.FindByEmailAsync(model.Email);
+
+            if (!password.Trim().Equals(confirmPassword.Trim()))
+            {
+                var errorMessage = new ErrorResponse.ErrorMessage()
+                {
+                    Key = AccountErrorConst.PasswordKey,
+                    Message = AccountErrorConst.PasswordMatching
+                };
+                responseModel.ErrorResponse.ErrorMessages.Add(errorMessage);
+                responseModel.ErrorResponseCode = StatusCodes.Status422UnprocessableEntity;
+            }
+        }
+
+        private async Task ValidateExistingUser<TResponseModel>(string email, TResponseModel responseModel) where TResponseModel : ResponseState
+        {
+            if (!responseModel.IsValid)
+                return;
+
+            var existingUser = await _userManager.FindByEmailAsync(email);
 
             if (existingUser is not null)
-                throw new AlreadyExistException.Email();
+            {
+                var errorMessage = new ErrorResponse.ErrorMessage()
+                {
+                    Key = AccountErrorConst.UserKey,
+                    Message = AccountErrorConst.UserAlreadyExist
+                };
+                responseModel.ErrorResponse.ErrorMessages.Add(errorMessage);
+                responseModel.ErrorResponseCode = StatusCodes.Status422UnprocessableEntity;
+            }
         }
 
         private List<Claim> GenerateClaimsList(AppUser user)

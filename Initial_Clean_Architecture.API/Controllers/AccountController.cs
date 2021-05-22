@@ -29,11 +29,13 @@ namespace Initial_Clean_Architecture.API.Controllers
         }
 
         [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LoginResponse))]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ErrorResponse))]
         [HttpPost(AccountUrlsConst.Register)]
         public async Task<IActionResult> RegisterAsync([FromBody] UserRegistrationRequest request)
         {
-            var authResponse = await _accountService.RegisterAsync(request);
-            return Ok(authResponse);
+            var response = await _accountService.RegisterAsync(request);
+            return response.GenerateResponse(_loggerService, HttpContext);
         }
 
 
