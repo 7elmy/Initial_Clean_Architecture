@@ -16,7 +16,7 @@ namespace Initial_Clean_Architecture.API.Extensions
         public static IActionResult GenerateResponse(this ResponseState response, ILoggerService loggerService, HttpContext context)
         {
             object resObj = response;
-            if (response.ErrorResponseCode != StatusCodes.Status200OK)
+            if (!response.IsValid)
             {
                 resObj = response.ErrorResponse;
 
@@ -27,7 +27,7 @@ namespace Initial_Clean_Architecture.API.Extensions
                 });
             }
             var result = new ObjectResult(resObj);
-            result.StatusCode = response.ErrorResponseCode;
+            result.StatusCode = response.ResponseCode;
 
             return result;
         }

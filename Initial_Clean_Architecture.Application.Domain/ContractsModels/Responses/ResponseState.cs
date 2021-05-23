@@ -16,6 +16,6 @@ namespace Initial_Clean_Architecture.Application.Domain.ContractsModels.Response
         }
         public ErrorResponse ErrorResponse { get; set; }
         public bool IsValid { get { return !ErrorResponse.ErrorMessages.Any(); } }
-        public int ErrorResponseCode { get; set; } = StatusCodes.Status200OK;
+        public int ResponseCode { get; set; } = StatusCodes.Status200OK;
     }
 }

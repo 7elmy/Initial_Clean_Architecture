@@ -70,7 +70,7 @@ namespace Initial_Clean_Architecture.Application.Services
                         Message = AccountErrorConst.EmailOrPassNotCorrect
                     };
                     loginResponse.ErrorResponse.ErrorMessages.Add(errorMessage);
-                    loginResponse.ErrorResponseCode = StatusCodes.Status401Unauthorized;
+                    loginResponse.ResponseCode = StatusCodes.Status401Unauthorized;
                 }
             }
             return loginResponse.IsValid;
@@ -80,23 +80,23 @@ namespace Initial_Clean_Architecture.Application.Services
         {
             var registrationResponse = new RegistrationResponse();
 
-            var isValid = await ValidateRegistration(model, registrationResponse);
+            await ValidateRegistration(model, registrationResponse);
 
-            if (!isValid)
+            if (!registrationResponse.IsValid)
                 return registrationResponse;
 
-            await CreateUser(model, registrationResponse);
+            var newUser = _mapper.Map<AppUser>(model);
+
+            await CreateUser(newUser, model.Password, registrationResponse);
 
             registrationResponse.Email = model.Email;
 
             return registrationResponse;
         }
 
-        private async Task CreateUser<TResponseModel>(UserRegistrationRequest model, TResponseModel responseModel) where TResponseModel : ResponseState
+        private async Task CreateUser<TResponseModel>(AppUser model, string password, TResponseModel responseModel) where TResponseModel : ResponseState
         {
-            var newUser = _mapper.Map<AppUser>(model);
-
-            var creatdUser = await _userManager.CreateAsync(newUser, model.Password);
+            var creatdUser = await _userManager.CreateAsync(model, password);
 
             if (!creatdUser.Succeeded)
             {
@@ -106,19 +106,17 @@ namespace Initial_Clean_Architecture.Application.Services
                     Message = AccountErrorConst.UserFaildToCreate
                 };
                 responseModel.ErrorResponse.ErrorMessages.Add(errorMessage);
-                responseModel.ErrorResponseCode = StatusCodes.Status422UnprocessableEntity;
+                responseModel.ResponseCode = StatusCodes.Status422UnprocessableEntity;
             }
         }
 
-        private async Task<bool> ValidateRegistration<TResponseModel>(UserRegistrationRequest model, TResponseModel responseModel) where TResponseModel : ResponseState
+        private async Task ValidateRegistration<TResponseModel>(UserRegistrationRequest model, TResponseModel responseModel) where TResponseModel : ResponseState
         {
             ValidateRole(model.Role, responseModel);
 
             await ValidatePassword(model.Password, model.ConfirmPassword, responseModel);
 
-            await ValidateExistingUser(model.Email,responseModel);
-
-            return responseModel.IsValid;
+            await ValidateExistingUser(model.Email, responseModel);
         }
 
         private void ValidateRole<TResponseModel>(string role, TResponseModel responseModel) where TResponseModel : ResponseState
@@ -126,7 +124,7 @@ namespace Initial_Clean_Architecture.Application.Services
             if (!responseModel.IsValid)
                 return;
 
-            if (!RolesConst.AllRoles.Contains(role.Trim().ToLower()))
+            if (!RolesConst.IsExist(role))
             {
                 var errorMessage = new ErrorResponse.ErrorMessage()
                 {
@@ -134,7 +132,7 @@ namespace Initial_Clean_Architecture.Application.Services
                     Message = AccountErrorConst.RoleIsNotFound
                 };
                 responseModel.ErrorResponse.ErrorMessages.Add(errorMessage);
-                responseModel.ErrorResponseCode = StatusCodes.Status422UnprocessableEntity;
+                responseModel.ResponseCode = StatusCodes.Status422UnprocessableEntity;
             }
         }
 
@@ -164,7 +162,7 @@ namespace Initial_Clean_Architecture.Application.Services
                     Message = AccountErrorConst.PasswordNotValid
                 };
                 responseModel.ErrorResponse.ErrorMessages.Add(errorMessage);
-                responseModel.ErrorResponseCode = StatusCodes.Status422UnprocessableEntity;
+                responseModel.ResponseCode = StatusCodes.Status422UnprocessableEntity;
             }
         }
 
@@ -179,7 +177,7 @@ namespace Initial_Clean_Architecture.Application.Services
                     Message = AccountErrorConst.PasswordMatching
                 };
                 responseModel.ErrorResponse.ErrorMessages.Add(errorMessage);
-                responseModel.ErrorResponseCode = StatusCodes.Status422UnprocessableEntity;
+                responseModel.ResponseCode = StatusCodes.Status422UnprocessableEntity;
             }
         }
 
@@ -198,7 +196,7 @@ namespace Initial_Clean_Architecture.Application.Services
                     Message = AccountErrorConst.UserAlreadyExist
                 };
                 responseModel.ErrorResponse.ErrorMessages.Add(errorMessage);
-                responseModel.ErrorResponseCode = StatusCodes.Status422UnprocessableEntity;
+                responseModel.ResponseCode = StatusCodes.Status422UnprocessableEntity;
             }
         }
 

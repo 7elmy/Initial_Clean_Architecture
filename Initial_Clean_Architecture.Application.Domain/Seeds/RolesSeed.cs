@@ -13,7 +13,7 @@ namespace Initial_Clean_Architecture.Application.Domain.Seeds
 
         public static void Seed(RoleManager<IdentityRole> roleManager)
         {
-            var props = typeof(RolesConst).GetFields().Where(x => !x.Name.Equals(nameof(RolesConst.AllRoles)));
+            var props = typeof(RolesConst).GetFields();
 
             foreach (var prop in props)
             {
