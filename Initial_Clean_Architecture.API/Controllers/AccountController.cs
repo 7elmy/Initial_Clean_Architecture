@@ -3,6 +3,7 @@ using Initial_Clean_Architecture.API.Extensions;
 using Initial_Clean_Architecture.Application.Domain.ContractsModels.Requests;
 using Initial_Clean_Architecture.Application.Domain.ContractsModels.Responses;
 using Initial_Clean_Architecture.Application.Domain.Interfaces;
+using Initial_Clean_Architecture.Application.Domain.Interfaces.AccountService;
 using Initial_Clean_Architecture.Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

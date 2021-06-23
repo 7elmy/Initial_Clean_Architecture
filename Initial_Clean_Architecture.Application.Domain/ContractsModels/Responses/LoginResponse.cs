@@ -8,6 +8,14 @@ namespace Initial_Clean_Architecture.Application.Domain.ContractsModels.Response
 {
     public class LoginResponse : ResponseState
     {
+        public LoginResponse()
+        {
+
+        }
+        public LoginResponse(ResponseState responseState) : base(responseState)
+        {
+
+        }
         public string Token { get; set; }
     }
 }

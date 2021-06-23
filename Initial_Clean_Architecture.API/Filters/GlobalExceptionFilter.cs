@@ -1,7 +1,6 @@
 ﻿using Initial_Clean_Architecture.Application.Domain.ContractsModels.Responses;
 using Initial_Clean_Architecture.Application.Domain.Interfaces;
 using Initial_Clean_Architecture.Data.Domain.Entities;
-using Initial_Clean_Architecture.Helpers.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;

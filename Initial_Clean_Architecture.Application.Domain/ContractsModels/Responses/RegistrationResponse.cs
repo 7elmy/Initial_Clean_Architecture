@@ -8,6 +8,14 @@ namespace Initial_Clean_Architecture.Application.Domain.ContractsModels.Response
 {
     public class RegistrationResponse: ResponseState
     {
+        public RegistrationResponse()
+        {
+
+        }
+        public RegistrationResponse(ResponseState responseState) : base(responseState)
+        {
+
+        }
         public string Email { get; set; }
     }
 }
