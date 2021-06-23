@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Initial_Clean_Architecture.Application.Services.AccountService
 {
-    class AccountServiceValidator : IAccountServiceValidator
+   public class AccountServiceValidator : IAccountServiceValidator
     {
         private readonly UserManager<AppUser> _userManager;
         public AccountServiceValidator(UserManager<AppUser> userManager)

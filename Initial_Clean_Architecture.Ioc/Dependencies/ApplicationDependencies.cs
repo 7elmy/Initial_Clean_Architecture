@@ -16,6 +16,7 @@ namespace Initial_Clean_Architecture.Ioc.Dependencies
         {
             services.AddScoped<ILoggerService, LoggerService>();
             services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IAccountServiceValidator, AccountServiceValidator>();
         }
     }
 }
